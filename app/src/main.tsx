@@ -1,9 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { Provider } from 'react-redux';
 import { App } from './App';
-
-const theme = createTheme();
+import { store } from './store/store';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -12,9 +11,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <Provider store={store}>
       <App />
-    </ThemeProvider>
+    </Provider>
   </StrictMode>,
 );

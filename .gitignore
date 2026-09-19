@@ -17,6 +17,6 @@ npm-debug.log*
 !.vscode/extensions.json
 .idea
 
-.claude/settings.local.json
+.claude
 
 *.tsbuildinfo
