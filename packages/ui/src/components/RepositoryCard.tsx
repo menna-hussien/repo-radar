@@ -136,10 +136,10 @@ function RepositoryCardComponent({
         </Stack>
         <Stack spacing={0.25} sx={{ mt: 1.5 }}>
           <Typography variant="caption" color="text.secondary">
-            Last commit: {formatDate(lastCommitDate)}
+            Last commit At: {formatDate(lastCommitDate)}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Stats last updated: {formatDate(lastUpdated)}
+            Stats last updated At: {formatDate(lastUpdated)}
           </Typography>
         </Stack>
         {error && (

@@ -12,7 +12,7 @@ export interface StarsVsIssuesChartProps {
   height?: number;
 }
 
-export function StarsVsIssuesChart({ data, height = 320 }: StarsVsIssuesChartProps) {
+export function StarsVsIssuesChart({ data, height = 360 }: StarsVsIssuesChartProps) {
   if (data.length === 0) {
     return <EmptyChartMessage />;
   }
@@ -35,8 +35,8 @@ export function StarsVsIssuesChart({ data, height = 320 }: StarsVsIssuesChartPro
               : null,
         },
       ]}
-      xAxis={[{ label: 'Stars' }]}
-      yAxis={[{ label: 'Open issues' }]}
+      xAxis={[{ label: 'Stars', scaleType: 'symlog' }]}
+      yAxis={[{ label: 'Open issues', scaleType: 'symlog' }]}
       height={height}
     />
   );

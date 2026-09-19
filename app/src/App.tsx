@@ -4,7 +4,6 @@ import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import {
   AppBar,
   Box,
-  Container,
   CssBaseline,
   IconButton,
   Tab,
@@ -17,12 +16,13 @@ import {
 } from '@mui/material';
 import type { PaletteMode } from '@mui/material';
 import { RepoRadarLogo } from '@repo-radar/ui';
+import { AnalyticsTab } from './features/analytics/AnalyticsTab';
 import { SearchTab } from './features/search/SearchTab';
 import { TrackedTab } from './features/tracked/TrackedTab';
 import { useTrackedRepositories } from './features/tracked/useTrackedRepositories';
 import { getTheme } from './theme';
 
-type ActiveTab = 'search' | 'tracked';
+type ActiveTab = 'search' | 'tracked' | 'analytics';
 
 export function App() {
   const [mode, setMode] = useState<PaletteMode>('light');
@@ -61,6 +61,7 @@ export function App() {
     >
       <Tab label="Search" value="search" />
       <Tab label="Tracked Repositories" value="tracked" />
+      <Tab label="Analytics" value="analytics" />
     </Tabs>
   );
 
@@ -68,12 +69,7 @@ export function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box>
-        <AppBar
-          position="static"
-          color="default"
-          elevation={0}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
+        <AppBar position="static" color="default" elevation={2}>
           <Toolbar
             sx={{
               flexDirection: { xs: 'column', sm: 'row' },
@@ -112,21 +108,20 @@ export function App() {
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 4 } }}>
-          {activeTab === 'search' && (
-            <SearchTab isTracked={isTracked} onTrack={track} onUntrack={untrack} />
-          )}
-          {activeTab === 'tracked' && (
-            <TrackedTab
-              trackedRepositories={trackedRepositories}
-              statsStateByRepoId={statsStateByRepoId}
-              onUntrack={untrack}
-              onRefresh={refreshOne}
-              onRefreshAll={refreshAll}
-              onGoToSearch={() => setActiveTab('search')}
-            />
-          )}
-        </Container>
+        {activeTab === 'search' && (
+          <SearchTab isTracked={isTracked} onTrack={track} onUntrack={untrack} />
+        )}
+        {activeTab === 'tracked' && (
+          <TrackedTab
+            trackedRepositories={trackedRepositories}
+            statsStateByRepoId={statsStateByRepoId}
+            onUntrack={untrack}
+            onRefresh={refreshOne}
+            onRefreshAll={refreshAll}
+            onGoToSearch={() => setActiveTab('search')}
+          />
+        )}
+        {activeTab === 'analytics' && <AnalyticsTab trackedRepositories={trackedRepositories} />}
       </Box>
     </ThemeProvider>
   );

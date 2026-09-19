@@ -4,11 +4,7 @@
 // interesting behavior to unit test here anyway — that belongs in the
 // charts package's own tests — so tests exercising components that render
 // them only need a harmless stand-in.
-export function StarsChart() {
-  return null;
-}
-
-export function OpenIssuesChart() {
+export function RankedBarChart() {
   return null;
 }
 

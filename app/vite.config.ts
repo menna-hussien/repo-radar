@@ -9,7 +9,7 @@ export default defineConfig({
     // scanner doesn't always discover its own dependencies proactively — and
     // it's only ever reached behind a React.lazy() dynamic import. Listing it
     // explicitly avoids a dev-server re-optimization hiccup on first load.
-    include: ['@mui/x-charts/BarChart', '@mui/x-charts/PieChart', '@mui/x-charts/ScatterChart'],
+    include: ['@mui/x-charts/BarChart', '@mui/x-charts/ScatterChart'],
   },
   test: {
     environment: 'jsdom',

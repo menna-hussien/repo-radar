@@ -59,6 +59,34 @@ describe('TrackedTab', () => {
     expect(screen.getByText('owner/repo-2')).toBeInTheDocument();
   });
 
+  it('filters tracked repositories by name, and shows an empty state when nothing matches', async () => {
+    const repositories = [
+      makeRepository({ id: 1, fullName: 'facebook/react' }),
+      makeRepository({ id: 2, fullName: 'vuejs/vue' }),
+    ];
+    render(
+      <TrackedTab
+        trackedRepositories={repositories}
+        statsStateByRepoId={noStatsState}
+        onUntrack={vi.fn()}
+        onRefresh={vi.fn()}
+        onRefreshAll={vi.fn()}
+        onGoToSearch={vi.fn()}
+      />,
+    );
+
+    const filterInput = screen.getByRole('searchbox', { name: 'Filter tracked repositories' });
+    await userEvent.type(filterInput, 'react');
+
+    expect(screen.getByText('facebook/react')).toBeInTheDocument();
+    expect(screen.queryByText('vuejs/vue')).not.toBeInTheDocument();
+
+    await userEvent.clear(filterInput);
+    await userEvent.type(filterInput, 'does-not-exist');
+
+    expect(screen.getByText('No tracked repositories match')).toBeInTheDocument();
+  });
+
   it('reveals more repositories with Load more, and hides the button once all are shown', async () => {
     const repositories = Array.from({ length: 7 }, (_, index) => makeRepository({ id: index + 1 }));
     render(

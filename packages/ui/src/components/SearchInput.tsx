@@ -26,6 +26,7 @@ export function SearchInput({
       type="search"
       fullWidth
       size="small"
+      sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}
       slotProps={{
         input: {
           startAdornment: (

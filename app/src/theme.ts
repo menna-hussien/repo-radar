@@ -9,6 +9,10 @@ export function getTheme(mode: PaletteMode) {
       success: { main: '#10B981' },
       warning: { main: '#F59E0B' },
       error: { main: '#EF4444' },
+      ...(mode === 'light' ? { background: { default: '#F3F4F6' } } : {}),
+    },
+    shape: {
+      borderRadius: 8,
     },
   });
 }

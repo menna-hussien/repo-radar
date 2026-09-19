@@ -1,4 +1,5 @@
 export { RepoRadarLogo } from './components/RepoRadarLogo';
+export { SearchIllustration } from './components/SearchIllustration';
 
 export { RepositoryCard } from './components/RepositoryCard';
 export type { RepositoryCardProps } from './components/RepositoryCard';

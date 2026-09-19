@@ -1,6 +1,5 @@
-import SearchIcon from '@mui/icons-material/Search';
-import { Box, Pagination, Stack, Typography } from '@mui/material';
-import { EmptyState, SearchInput } from '@repo-radar/ui';
+import { Box, Container, Pagination, Stack, Typography } from '@mui/material';
+import { EmptyState, SearchIllustration, SearchInput } from '@repo-radar/ui';
 import type { Repository } from '../../types';
 import { SearchResults } from './SearchResults';
 import { useRepositorySearch } from './useRepositorySearch';
@@ -36,46 +35,48 @@ export function SearchTab({ isTracked, onTrack, onUntrack }: SearchTabProps) {
   };
 
   return (
-    <Stack spacing={3}>
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h4" component="h2" sx={{ fontWeight: 700 }} gutterBottom>
-          Discover amazing repositories
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Search GitHub repositories, explore projects, and track your favorites.
-        </Typography>
-      </Box>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Stack spacing={3}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h4" component="h2" sx={{ fontWeight: 700 }} gutterBottom>
+            Discover amazing repositories
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Search GitHub repositories, explore projects, and track your favorites.
+          </Typography>
+        </Box>
 
-      <SearchInput value={query} onChange={onQueryChange} isLoading={status === 'loading'} />
+        <SearchInput value={query} onChange={onQueryChange} isLoading={status === 'loading'} />
 
-      {!isSearching && (
-        <EmptyState
-          icon={<SearchIcon sx={{ fontSize: 56 }} color="disabled" />}
-          title="Start typing to search"
-        />
-      )}
-
-      {isSearching && (
-        <>
-          <SearchResults
-            repositories={repositories}
-            status={status}
-            error={error}
-            isTracked={isTracked}
-            onToggleTrack={handleToggleTrack}
+        {!isSearching && (
+          <EmptyState
+            icon={<SearchIllustration sx={{ fontSize: 140 }} />}
+            title="Start typing to search"
           />
-          {status === 'success' && repositories.length > 0 && totalPages > 1 && (
-            <Stack alignItems="center">
-              <Pagination
-                page={page}
-                count={totalPages}
-                onChange={(_event, value) => onPageChange(value)}
-                color="primary"
-              />
-            </Stack>
-          )}
-        </>
-      )}
-    </Stack>
+        )}
+
+        {isSearching && (
+          <>
+            <SearchResults
+              repositories={repositories}
+              status={status}
+              error={error}
+              isTracked={isTracked}
+              onToggleTrack={handleToggleTrack}
+            />
+            {status === 'success' && repositories.length > 0 && totalPages > 1 && (
+              <Stack alignItems="center">
+                <Pagination
+                  page={page}
+                  count={totalPages}
+                  onChange={(_event, value) => onPageChange(value)}
+                  color="primary"
+                />
+              </Stack>
+            )}
+          </>
+        )}
+      </Stack>
+    </Container>
   );
 }
