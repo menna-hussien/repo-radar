@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   fetchRepositoryStats,
@@ -18,12 +18,22 @@ export function useTrackedRepositories() {
   const trackedRepositories = useAppSelector(selectTrackedRepositories);
   const statsStateByRepoId = useAppSelector(selectStatsStateByRepoId);
 
+  const hasHydratedRef = useRef(false);
+
   useEffect(() => {
+    // Skip the very first run: at that point trackedRepositories is still
+    // Redux's initial [], and hydration (below) hasn't loaded the real
+    // persisted data yet. Saving here would overwrite it with [] before it's
+    // ever read back.
+    if (!hasHydratedRef.current) {
+      return;
+    }
     saveTrackedRepositories(trackedRepositories);
   }, [trackedRepositories]);
 
   useEffect(() => {
     const persisted = loadTrackedRepositories();
+    hasHydratedRef.current = true;
     if (persisted.length === 0) {
       return;
     }

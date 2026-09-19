@@ -27,37 +27,18 @@ describe('trackedRepositoriesStorage', () => {
     expect(loadTrackedRepositories()).toEqual([]);
   });
 
-  it('persists only the minimal stable fields', () => {
+  it('persists the full repository, stats included', () => {
     saveTrackedRepositories([makeRepository()]);
 
     const raw = localStorage.getItem(TRACKED_REPOSITORIES_STORAGE_KEY);
     expect(raw).not.toBeNull();
-    expect(JSON.parse(raw as string)).toEqual([
-      {
-        id: 1,
-        fullName: 'octocat/hello-world',
-        avatarUrl: 'https://example.com/avatar.png',
-        htmlUrl: 'https://github.com/octocat/hello-world',
-      },
-    ]);
+    expect(JSON.parse(raw as string)).toEqual([makeRepository()]);
   });
 
-  it('round-trips a saved repository with stats fields reset to null', () => {
+  it('round-trips a saved repository with stats intact, so stale data survives a refresh', () => {
     saveTrackedRepositories([makeRepository()]);
 
-    expect(loadTrackedRepositories()).toEqual([
-      {
-        id: 1,
-        fullName: 'octocat/hello-world',
-        description: null,
-        avatarUrl: 'https://example.com/avatar.png',
-        htmlUrl: 'https://github.com/octocat/hello-world',
-        stars: null,
-        openIssues: null,
-        lastCommitDate: null,
-        lastUpdated: null,
-      },
-    ]);
+    expect(loadTrackedRepositories()).toEqual([makeRepository()]);
   });
 
   it('treats malformed JSON as an empty tracked collection', () => {
@@ -75,11 +56,7 @@ describe('trackedRepositoriesStorage', () => {
   it('filters out malformed entries within an otherwise valid array', () => {
     localStorage.setItem(
       TRACKED_REPOSITORIES_STORAGE_KEY,
-      JSON.stringify([
-        { id: 1, fullName: 'ok/repo', avatarUrl: 'a', htmlUrl: 'h' },
-        { id: 'not-a-number', fullName: 'bad/repo' },
-        null,
-      ]),
+      JSON.stringify([makeRepository(), { id: 'not-a-number', fullName: 'bad/repo' }, null]),
     );
 
     const loaded = loadTrackedRepositories();

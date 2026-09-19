@@ -1,14 +1,15 @@
 import type { Repository } from '../../types';
 import { TRACKED_REPOSITORIES_STORAGE_KEY } from '../../constants';
 
-interface StoredRepository {
-  id: number;
-  fullName: string;
-  avatarUrl: string;
-  htmlUrl: string;
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === 'string';
 }
 
-function isStoredRepository(value: unknown): value is StoredRepository {
+function isNullableNumber(value: unknown): value is number | null {
+  return value === null || typeof value === 'number';
+}
+
+function isStoredRepository(value: unknown): value is Repository {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
@@ -17,7 +18,12 @@ function isStoredRepository(value: unknown): value is StoredRepository {
     typeof candidate.id === 'number' &&
     typeof candidate.fullName === 'string' &&
     typeof candidate.avatarUrl === 'string' &&
-    typeof candidate.htmlUrl === 'string'
+    typeof candidate.htmlUrl === 'string' &&
+    isNullableString(candidate.description) &&
+    isNullableNumber(candidate.stars) &&
+    isNullableNumber(candidate.openIssues) &&
+    isNullableString(candidate.lastCommitDate) &&
+    isNullableString(candidate.lastUpdated)
   );
 }
 
@@ -32,28 +38,12 @@ export function loadTrackedRepositories(): Repository[] {
     if (!Array.isArray(parsed)) {
       return [];
     }
-    return parsed.filter(isStoredRepository).map((stored): Repository => ({
-      id: stored.id,
-      fullName: stored.fullName,
-      description: null,
-      avatarUrl: stored.avatarUrl,
-      htmlUrl: stored.htmlUrl,
-      stars: null,
-      openIssues: null,
-      lastCommitDate: null,
-      lastUpdated: null,
-    }));
+    return parsed.filter(isStoredRepository);
   } catch {
     return [];
   }
 }
 
 export function saveTrackedRepositories(repositories: Repository[]): void {
-  const toStore: StoredRepository[] = repositories.map((repository) => ({
-    id: repository.id,
-    fullName: repository.fullName,
-    avatarUrl: repository.avatarUrl,
-    htmlUrl: repository.htmlUrl,
-  }));
-  localStorage.setItem(TRACKED_REPOSITORIES_STORAGE_KEY, JSON.stringify(toStore));
+  localStorage.setItem(TRACKED_REPOSITORIES_STORAGE_KEY, JSON.stringify(repositories));
 }
