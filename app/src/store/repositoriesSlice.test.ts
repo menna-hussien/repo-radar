@@ -52,7 +52,7 @@ describe('repositoriesSlice', () => {
     const store = createTestStore();
     const repository = makeRepository();
     store.dispatch(repositoryTracked(repository));
-    store.dispatch(fetchRepositoryStats.pending('request-id', repository.id));
+    store.dispatch(fetchRepositoryStats.pending('request-id', { repoId: repository.id }));
 
     store.dispatch(repositoryUntracked(repository.id));
 
@@ -77,7 +77,7 @@ describe('repositoriesSlice', () => {
       const repository = makeRepository({ stars: 42 });
       store.dispatch(repositoryTracked(repository));
 
-      store.dispatch(fetchRepositoryStats.pending('request-id', repository.id));
+      store.dispatch(fetchRepositoryStats.pending('request-id', { repoId: repository.id }));
 
       const state = store.getState().repositories;
       expect(state.statsStateByRepoId[repository.id]).toEqual({ status: 'loading', error: null });
@@ -106,7 +106,7 @@ describe('repositoriesSlice', () => {
             },
           },
           'request-id',
-          repository.id,
+          { repoId: repository.id },
         ),
       );
 
@@ -124,7 +124,7 @@ describe('repositoriesSlice', () => {
       const store = createTestStore();
       const repository = makeRepository();
       store.dispatch(repositoryTracked(repository));
-      store.dispatch(fetchRepositoryStats.pending('request-id', repository.id));
+      store.dispatch(fetchRepositoryStats.pending('request-id', { repoId: repository.id }));
       store.dispatch(repositoryUntracked(repository.id));
 
       store.dispatch(
@@ -134,7 +134,7 @@ describe('repositoriesSlice', () => {
             stats: { stars: 1, openIssues: 1, lastCommitDate: null, description: null },
           },
           'request-id',
-          repository.id,
+          { repoId: repository.id },
         ),
       );
 
@@ -145,11 +145,13 @@ describe('repositoriesSlice', () => {
       const store = createTestStore();
       const repository = makeRepository();
       store.dispatch(repositoryTracked(repository));
-      store.dispatch(fetchRepositoryStats.pending('request-id', repository.id));
+      store.dispatch(fetchRepositoryStats.pending('request-id', { repoId: repository.id }));
       store.dispatch(repositoryUntracked(repository.id));
 
       store.dispatch(
-        fetchRepositoryStats.rejected(new Error('Network error'), 'request-id', repository.id),
+        fetchRepositoryStats.rejected(new Error('Network error'), 'request-id', {
+          repoId: repository.id,
+        }),
       );
 
       expect(store.getState().repositories.statsStateByRepoId).toEqual({});
@@ -161,7 +163,9 @@ describe('repositoriesSlice', () => {
       store.dispatch(repositoryTracked(repository));
 
       store.dispatch(
-        fetchRepositoryStats.rejected(new Error('Network error'), 'request-id', repository.id),
+        fetchRepositoryStats.rejected(new Error('Network error'), 'request-id', {
+          repoId: repository.id,
+        }),
       );
 
       const state = store.getState().repositories;

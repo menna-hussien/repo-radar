@@ -8,18 +8,24 @@ export interface RepositoryStats {
   description: string | null;
 }
 
+export async function getLastCommitDate(fullName: string): Promise<string | null> {
+  try {
+    const response = await githubClient.get<GitHubCommitDto[]>(`/repos/${fullName}/commits`, {
+      params: { per_page: 1 },
+    });
+    const latestCommit = response.data[0];
+    return latestCommit?.commit.committer?.date ?? latestCommit?.commit.author?.date ?? null;
+  } catch (error) {
+    throw normalizeGitHubError(error);
+  }
+}
+
 export async function getRepositoryStats(fullName: string): Promise<RepositoryStats> {
   try {
-    const [repoResponse, commitsResponse] = await Promise.all([
+    const [repoResponse, lastCommitDate] = await Promise.all([
       githubClient.get<GitHubRepositoryDto>(`/repos/${fullName}`),
-      githubClient.get<GitHubCommitDto[]>(`/repos/${fullName}/commits`, {
-        params: { per_page: 1 },
-      }),
+      getLastCommitDate(fullName),
     ]);
-
-    const latestCommit = commitsResponse.data[0];
-    const lastCommitDate =
-      latestCommit?.commit.committer?.date ?? latestCommit?.commit.author?.date ?? null;
 
     return {
       stars: repoResponse.data.stargazers_count ?? 0,

@@ -11,7 +11,12 @@ import {
   loadTrackedRepositories,
   saveTrackedRepositories,
 } from '../../services/storage/trackedRepositoriesStorage';
+import { STATS_FRESH_FOR_MS } from '../../constants';
 import type { Repository } from '../../types';
+
+function isStatsFresh(lastUpdated: string | null): boolean {
+  return lastUpdated !== null && Date.now() - Date.parse(lastUpdated) < STATS_FRESH_FOR_MS;
+}
 
 export function useTrackedRepositories() {
   const dispatch = useAppDispatch();
@@ -38,9 +43,11 @@ export function useTrackedRepositories() {
       return;
     }
     dispatch(trackedRepositoriesHydrated(persisted));
-    persisted.forEach((repository) => {
-      void dispatch(fetchRepositoryStats(repository.id));
-    });
+    persisted
+      .filter((repository) => !isStatsFresh(repository.lastUpdated))
+      .forEach((repository) => {
+        void dispatch(fetchRepositoryStats({ repoId: repository.id }));
+      });
     // Hydration runs once when the dashboard mounts.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -53,7 +60,7 @@ export function useTrackedRepositories() {
   const track = useCallback(
     (repository: Repository) => {
       dispatch(repositoryTracked(repository));
-      void dispatch(fetchRepositoryStats(repository.id));
+      void dispatch(fetchRepositoryStats({ repoId: repository.id, reuseKnownStats: true }));
     },
     [dispatch],
   );
@@ -67,14 +74,14 @@ export function useTrackedRepositories() {
 
   const refreshOne = useCallback(
     (repoId: number) => {
-      void dispatch(fetchRepositoryStats(repoId));
+      void dispatch(fetchRepositoryStats({ repoId }));
     },
     [dispatch],
   );
 
   const refreshAll = useCallback(() => {
     trackedRepositories.forEach((repository) => {
-      void dispatch(fetchRepositoryStats(repository.id));
+      void dispatch(fetchRepositoryStats({ repoId: repository.id }));
     });
   }, [dispatch, trackedRepositories]);
 

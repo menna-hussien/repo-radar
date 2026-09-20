@@ -15,6 +15,9 @@ export function isRequestCancelled(error: unknown): boolean {
 }
 
 export function normalizeGitHubError(error: unknown): GitHubApiError {
+  if (error instanceof GitHubApiError) {
+    return error;
+  }
   if (isAxiosError(error)) {
     if (error.response?.status === 403) {
       return new GitHubApiError('GitHub API rate limit exceeded. Please try again later.');
