@@ -49,16 +49,21 @@ const repositoriesSlice = createSlice({
       .addCase(fetchRepositoryStats.fulfilled, (state, action) => {
         const { repoId, stats } = action.payload;
         const repository = state.trackedRepositories.find((r) => r.id === repoId);
-        if (repository) {
-          repository.stars = stats.stars;
-          repository.openIssues = stats.openIssues;
-          repository.lastCommitDate = stats.lastCommitDate;
-          repository.description = stats.description;
-          repository.lastUpdated = new Date().toISOString();
+        // The repository may have been untracked while this request was in flight.
+        if (!repository) {
+          return;
         }
+        repository.stars = stats.stars;
+        repository.openIssues = stats.openIssues;
+        repository.lastCommitDate = stats.lastCommitDate;
+        repository.description = stats.description;
+        repository.lastUpdated = new Date().toISOString();
         state.statsStateByRepoId[repoId] = { status: 'success', error: null };
       })
       .addCase(fetchRepositoryStats.rejected, (state, action) => {
+        if (!state.trackedRepositories.some((r) => r.id === action.meta.arg)) {
+          return;
+        }
         state.statsStateByRepoId[action.meta.arg] = {
           status: 'error',
           error: action.error.message ?? 'Failed to fetch repository stats.',

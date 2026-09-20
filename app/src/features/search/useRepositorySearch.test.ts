@@ -6,6 +6,12 @@ const { searchRepositoriesMock } = vi.hoisted(() => ({
   searchRepositoriesMock: vi.fn(),
 }));
 
+// Pin the debounce so these timing-based tests don't depend on the app's tuning.
+vi.mock('../../constants', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../constants')>()),
+  SEARCH_DEBOUNCE_MS: 300,
+}));
+
 vi.mock('../../services/github', () => ({
   searchRepositories: searchRepositoriesMock,
   isRequestCancelled: (error: unknown) =>
@@ -64,6 +70,25 @@ describe('useRepositorySearch', () => {
 
     act(() => result.current.onQueryChange('vue'));
     await waitFor(() => expect(result.current.page).toBe(1));
+  });
+
+  it('never requests the old page number for a new query', async () => {
+    searchRepositoriesMock.mockResolvedValue({ repositories: [], totalPages: 5 });
+    const { result } = renderHook(() => useRepositorySearch());
+
+    act(() => result.current.onQueryChange('react'));
+    await waitFor(() => expect(result.current.status).toBe('success'));
+    act(() => result.current.onPageChange(3));
+    await waitFor(() =>
+      expect(searchRepositoriesMock).toHaveBeenLastCalledWith('react', 3, expect.any(AbortSignal)),
+    );
+
+    act(() => result.current.onQueryChange('vue'));
+    await waitFor(() =>
+      expect(searchRepositoriesMock).toHaveBeenLastCalledWith('vue', 1, expect.any(AbortSignal)),
+    );
+
+    expect(searchRepositoriesMock).not.toHaveBeenCalledWith('vue', 3, expect.any(AbortSignal));
   });
 
   it('does not let a stale request overwrite a newer one', async () => {

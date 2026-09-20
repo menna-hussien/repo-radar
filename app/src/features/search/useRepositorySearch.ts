@@ -10,16 +10,18 @@ export function useRepositorySearch() {
   const debouncedInputValue = useDebouncedValue(inputValue, SEARCH_DEBOUNCE_MS);
   const query = debouncedInputValue.trim();
 
-  const [page, setPage] = useState(1);
+  const [pageState, setPageState] = useState({ query, page: 1 });
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [status, setStatus] = useState<SearchStatus>('idle');
   const [error, setError] = useState<string | null>(null);
 
-  // A new search query always starts back at page 1.
-  useEffect(() => {
-    setPage(1);
-  }, [query]);
+  // A new query always starts back at page 1. Resetting during render (rather than
+  // in an effect) means the fetch effect never sees the new query with the old page.
+  if (pageState.query !== query) {
+    setPageState({ query, page: 1 });
+  }
+  const page = pageState.page;
 
   useEffect(() => {
     if (query === '') {
@@ -64,6 +66,6 @@ export function useRepositorySearch() {
     error,
     page,
     totalPages,
-    onPageChange: setPage,
+    onPageChange: (nextPage: number) => setPageState({ query, page: nextPage }),
   };
 }

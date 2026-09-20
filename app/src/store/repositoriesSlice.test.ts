@@ -120,6 +120,41 @@ describe('repositoriesSlice', () => {
       expect(state.statsStateByRepoId[repository.id]).toEqual({ status: 'success', error: null });
     });
 
+    it('does not recreate stats state when a fetch succeeds after the repository was untracked', () => {
+      const store = createTestStore();
+      const repository = makeRepository();
+      store.dispatch(repositoryTracked(repository));
+      store.dispatch(fetchRepositoryStats.pending('request-id', repository.id));
+      store.dispatch(repositoryUntracked(repository.id));
+
+      store.dispatch(
+        fetchRepositoryStats.fulfilled(
+          {
+            repoId: repository.id,
+            stats: { stars: 1, openIssues: 1, lastCommitDate: null, description: null },
+          },
+          'request-id',
+          repository.id,
+        ),
+      );
+
+      expect(store.getState().repositories.statsStateByRepoId).toEqual({});
+    });
+
+    it('does not recreate stats state when a fetch fails after the repository was untracked', () => {
+      const store = createTestStore();
+      const repository = makeRepository();
+      store.dispatch(repositoryTracked(repository));
+      store.dispatch(fetchRepositoryStats.pending('request-id', repository.id));
+      store.dispatch(repositoryUntracked(repository.id));
+
+      store.dispatch(
+        fetchRepositoryStats.rejected(new Error('Network error'), 'request-id', repository.id),
+      );
+
+      expect(store.getState().repositories.statsStateByRepoId).toEqual({});
+    });
+
     it('preserves existing repository data and sets an error on rejected', () => {
       const store = createTestStore();
       const repository = makeRepository({ stars: 55, openIssues: 4, description: 'original' });
