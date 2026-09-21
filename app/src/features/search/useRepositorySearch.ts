@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import { useDebounce } from 'use-debounce';
 import { GitHubApiError, isRequestCancelled, searchRepositories } from '../../services/github';
 import type { Repository } from '../../types';
 import type { SearchStatus } from './search.types';
@@ -7,7 +7,7 @@ import { SEARCH_DEBOUNCE_MS } from '../../constants';
 
 export function useRepositorySearch() {
   const [inputValue, setInputValue] = useState('');
-  const debouncedInputValue = useDebouncedValue(inputValue, SEARCH_DEBOUNCE_MS);
+  const [debouncedInputValue] = useDebounce(inputValue, SEARCH_DEBOUNCE_MS);
   const query = debouncedInputValue.trim();
 
   const [pageState, setPageState] = useState({ query, page: 1 });

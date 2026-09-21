@@ -85,7 +85,6 @@ app/
       github/
       storage/
     store/
-    hooks/
     types.ts
     constants.ts
     theme.ts
