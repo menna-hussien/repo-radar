@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import BookmarksOutlinedIcon from '@mui/icons-material/BookmarksOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   AppBar,
   Box,
@@ -23,6 +27,21 @@ import { useTrackedRepositories } from './features/tracked/useTrackedRepositorie
 import { getTheme } from './theme';
 
 type ActiveTab = 'search' | 'tracked' | 'analytics';
+
+const tabProps = (tab: ActiveTab) => ({
+  value: tab,
+  iconPosition: 'start' as const,
+  id: `tab-${tab}`,
+  'aria-controls': `tabpanel-${tab}`,
+});
+
+function TabPanel({ tab, children }: { tab: ActiveTab; children: ReactNode }) {
+  return (
+    <Box role="tabpanel" id={`tabpanel-${tab}`} aria-labelledby={`tab-${tab}`}>
+      {children}
+    </Box>
+  );
+}
 
 export function App() {
   const [mode, setMode] = useState<PaletteMode>('light');
@@ -51,6 +70,8 @@ export function App() {
     </Tooltip>
   );
 
+  const tabIconProps = (icon: ReactElement) => (isMobile ? {} : { icon });
+
   const tabs = (
     <Tabs
       value={activeTab}
@@ -59,9 +80,21 @@ export function App() {
       variant={isMobile ? 'fullWidth' : 'standard'}
       sx={{ width: { xs: '100%', sm: 'auto' } }}
     >
-      <Tab label="Search" value="search" />
-      <Tab label="Tracked Repositories" value="tracked" />
-      <Tab label="Analytics" value="analytics" />
+      <Tab
+        {...tabIconProps(<SearchIcon fontSize="small" />)}
+        label="Search"
+        {...tabProps('search')}
+      />
+      <Tab
+        {...tabIconProps(<BookmarksOutlinedIcon fontSize="small" />)}
+        label="Tracked Repositories"
+        {...tabProps('tracked')}
+      />
+      <Tab
+        {...tabIconProps(<BarChartIcon fontSize="small" />)}
+        label="Analytics"
+        {...tabProps('analytics')}
+      />
     </Tabs>
   );
 
@@ -109,19 +142,27 @@ export function App() {
         </AppBar>
 
         {activeTab === 'search' && (
-          <SearchTab isTracked={isTracked} onTrack={track} onUntrack={untrack} />
+          <TabPanel tab="search">
+            <SearchTab isTracked={isTracked} onTrack={track} onUntrack={untrack} />
+          </TabPanel>
         )}
         {activeTab === 'tracked' && (
-          <TrackedTab
-            trackedRepositories={trackedRepositories}
-            statsStateByRepoId={statsStateByRepoId}
-            onUntrack={untrack}
-            onRefresh={refreshOne}
-            onRefreshAll={refreshAll}
-            onGoToSearch={() => setActiveTab('search')}
-          />
+          <TabPanel tab="tracked">
+            <TrackedTab
+              trackedRepositories={trackedRepositories}
+              statsStateByRepoId={statsStateByRepoId}
+              onUntrack={untrack}
+              onRefresh={refreshOne}
+              onRefreshAll={refreshAll}
+              onGoToSearch={() => setActiveTab('search')}
+            />
+          </TabPanel>
         )}
-        {activeTab === 'analytics' && <AnalyticsTab trackedRepositories={trackedRepositories} />}
+        {activeTab === 'analytics' && (
+          <TabPanel tab="analytics">
+            <AnalyticsTab trackedRepositories={trackedRepositories} />
+          </TabPanel>
+        )}
       </Box>
     </ThemeProvider>
   );
