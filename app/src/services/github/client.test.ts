@@ -27,6 +27,15 @@ describe('githubClient authorization', () => {
     expect(headers).not.toHaveProperty('Authorization');
   });
 
+  it('ignores VITE_GITHUB_TOKEN in a production build', async () => {
+    vi.stubEnv('VITE_GITHUB_TOKEN', 'local-dev-token');
+    vi.stubEnv('DEV', false);
+
+    const headers = await loadClientHeaders();
+
+    expect(headers).not.toHaveProperty('Authorization');
+  });
+
   it('sends no Authorization header when VITE_GITHUB_TOKEN is empty', async () => {
     vi.stubEnv('VITE_GITHUB_TOKEN', '');
 
