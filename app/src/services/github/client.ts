@@ -1,10 +1,16 @@
 import axios, { isAxiosError } from 'axios';
 import { GITHUB_API_BASE_URL } from '../../constants';
 
+// Optional, for local development only: raises the rate limit from 60 to 5,000
+// requests per hour. Vite inlines VITE_* variables into the client bundle, so it must
+// never be set on a public deployment. When unset, no Authorization header is sent.
+const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+
 export const githubClient = axios.create({
   baseURL: GITHUB_API_BASE_URL,
   headers: {
     Accept: 'application/vnd.github+json',
+    ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {}),
   },
 });
 
