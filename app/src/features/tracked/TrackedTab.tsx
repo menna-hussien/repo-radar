@@ -46,9 +46,13 @@ export function TrackedTab({
   const isAnyRefreshing = Object.values(statsStateByRepoId).some(
     (state) => state.status === 'loading',
   );
-  const filteredRepositories = trackedRepositories.filter((repository) =>
-    repository.fullName.toLowerCase().includes(filterQuery.trim().toLowerCase()),
-  );
+  // Repositories are stored in the order they were tracked, so reversing shows the
+  // most recently tracked first.
+  const filteredRepositories = [...trackedRepositories]
+    .reverse()
+    .filter((repository) =>
+      repository.fullName.toLowerCase().includes(filterQuery.trim().toLowerCase()),
+    );
   const visibleRepositories = filteredRepositories.slice(0, visibleCount);
 
   return (

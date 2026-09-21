@@ -59,6 +59,29 @@ describe('TrackedTab', () => {
     expect(screen.getByText('owner/repo-2')).toBeInTheDocument();
   });
 
+  it('lists the most recently tracked repository first', () => {
+    const repositories = [
+      makeRepository({ id: 1, fullName: 'owner/first-tracked' }),
+      makeRepository({ id: 2, fullName: 'owner/second-tracked' }),
+      makeRepository({ id: 3, fullName: 'owner/third-tracked' }),
+    ];
+    render(
+      <TrackedTab
+        trackedRepositories={repositories}
+        statsStateByRepoId={noStatsState}
+        onUntrack={vi.fn()}
+        onRefresh={vi.fn()}
+        onRefreshAll={vi.fn()}
+        onGoToSearch={vi.fn()}
+      />,
+    );
+
+    const names = screen
+      .getAllByRole('article')
+      .map((card) => within(card).getByText(/^owner\//).textContent);
+    expect(names).toEqual(['owner/third-tracked', 'owner/second-tracked', 'owner/first-tracked']);
+  });
+
   it('filters tracked repositories by name, and shows an empty state when nothing matches', async () => {
     const repositories = [
       makeRepository({ id: 1, fullName: 'facebook/react' }),
@@ -100,12 +123,12 @@ describe('TrackedTab', () => {
       />,
     );
 
-    expect(screen.getByText('owner/repo-6')).toBeInTheDocument();
-    expect(screen.queryByText('owner/repo-7')).not.toBeInTheDocument();
+    expect(screen.getByText('owner/repo-2')).toBeInTheDocument();
+    expect(screen.queryByText('owner/repo-1')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Load more' }));
 
-    expect(screen.getByText('owner/repo-7')).toBeInTheDocument();
+    expect(screen.getByText('owner/repo-1')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Load more' })).not.toBeInTheDocument();
   });
 
