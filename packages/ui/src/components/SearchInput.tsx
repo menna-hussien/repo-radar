@@ -26,7 +26,11 @@ export function SearchInput({
       type="search"
       fullWidth
       size="small"
-      sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}
+      sx={{
+        '& .MuiOutlinedInput-root': { bgcolor: 'background.paper' },
+        // Browsers add their own clear button to type="search" inputs; we render ours.
+        '& input[type="search"]::-webkit-search-cancel-button': { display: 'none' },
+      }}
       slotProps={{
         input: {
           startAdornment: (
