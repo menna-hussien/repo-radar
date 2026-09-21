@@ -13,7 +13,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { EmptyState } from '@repo-radar/ui';
+import { EmptyState, ErrorState } from '@repo-radar/ui';
+import { ErrorBoundary } from 'react-error-boundary';
 import { OPEN_ISSUES_CHART_LIMIT } from '../../constants';
 import type { Repository } from '../../types';
 
@@ -56,7 +57,19 @@ export function AnalyticsTab({ trackedRepositories }: AnalyticsTabProps) {
             description="Track a repository to see stars, open issues, and correlations here."
           />
         ) : (
-          <AnalyticsCharts trackedRepositories={trackedRepositories} />
+          // A failed chart download must not take the whole app down. React.lazy caches a
+          // failed import, so re-rendering can't retry it; reloading can, and it also picks
+          // up the new file names after a deploy.
+          <ErrorBoundary
+            fallback={
+              <ErrorState
+                message="The charts couldn't be loaded. Check your connection and reload the page."
+                onRetry={() => window.location.reload()}
+              />
+            }
+          >
+            <AnalyticsCharts trackedRepositories={trackedRepositories} />
+          </ErrorBoundary>
         )}
       </Stack>
     </Container>
