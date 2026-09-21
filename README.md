@@ -153,7 +153,7 @@ Search state remains local to the search feature because it is transient and isn
 
 Repository statistics are fetched through a single async thunk per repository.
 
-"Refresh All" dispatches one request per repository without awaiting them sequentially. This means requests can run concurrently while each repository maintains its own loading and error state.
+"Refresh All" dispatches one stats fetch per repository without awaiting them sequentially. This means requests can run concurrently while each repository maintains its own loading and error state.
 
 A failed refresh does not remove or clear the repository's last-known statistics.
 
@@ -204,7 +204,7 @@ It currently provides:
 
 Charts consume the repository data already available in the application state, so analytics does not introduce additional GitHub API requests.
 
-The analytics feature is lazy-loaded so the charting dependency is not included in the initial application bundle. An error boundary isolates failed chart chunk loads so they don't take down the rest of the application.
+The analytics feature is lazy-loaded so the charting dependency is not included in the initial application bundle. Each chart card has its own `Suspense` and error boundary, so a chart that fails to render or download shows an error with a reload button in its own card, without affecting the other charts or the rest of the application.
 
 ## Testing
 
