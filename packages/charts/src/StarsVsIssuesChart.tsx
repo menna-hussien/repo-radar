@@ -37,6 +37,7 @@ export function StarsVsIssuesChart({ data, height = 360 }: StarsVsIssuesChartPro
       ]}
       xAxis={[{ label: 'Stars', scaleType: 'symlog' }]}
       yAxis={[{ label: 'Open issues', scaleType: 'symlog' }]}
+      hideLegend
       height={height}
     />
   );

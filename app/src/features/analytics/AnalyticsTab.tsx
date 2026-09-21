@@ -14,6 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import { EmptyState } from '@repo-radar/ui';
+import { OPEN_ISSUES_CHART_LIMIT } from '../../constants';
 import type { Repository } from '../../types';
 
 // @mui/x-charts is the largest dependency in the bundle; it's only needed once the
@@ -103,11 +104,16 @@ function AnalyticsCharts({ trackedRepositories }: AnalyticsTabProps) {
           <CardHeader
             avatar={<BugReportIcon color="error" />}
             title="Open Issues by Repository"
-            subheader="Ranked by number of open issues"
+            subheader={`Top ${OPEN_ISSUES_CHART_LIMIT} by number of open issues`}
           />
           <CardContent>
             <Suspense fallback={chartFallback}>
-              <RankedBarChart data={openIssuesData} valueLabel="Open issues" color="#EF4444" />
+              <RankedBarChart
+                data={openIssuesData}
+                valueLabel="Open issues"
+                color="#EF4444"
+                limit={OPEN_ISSUES_CHART_LIMIT}
+              />
             </Suspense>
           </CardContent>
         </Card>

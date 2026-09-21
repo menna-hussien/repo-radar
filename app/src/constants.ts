@@ -13,3 +13,5 @@ export const STATS_FRESH_FOR_MS = 15 * 60 * 1000;
 
 export const TRACKED_INITIAL_VISIBLE_COUNT = 6;
 export const TRACKED_LOAD_MORE_STEP = 6;
+
+export const OPEN_ISSUES_CHART_LIMIT = 10;
