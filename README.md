@@ -234,12 +234,14 @@ The chart package is stubbed in application tests because MUI X Charts' ESM buil
 - **Browse feed:** The application intentionally provides repository search rather than an unfiltered repository feed.
 - **Theme:** Light/dark theme preference is not persisted.
 - **Authentication:** No GitHub user authentication is required because the task only requires public repository data.
+- **Deployment:** CI and the Vercel deployment run in parallel, so production deploys are not gated on CI passing. Vercel's own build still type-checks and builds the app, but lint and tests only run in CI.
 
 ## Future Improvements
 
 For a production version, I would consider:
 
 - A server-side GitHub API proxy for secure authenticated requests and higher rate limits.
+- Gating production deploys on CI, using Vercel Deployment Checks or a deploy step in the GitHub Actions workflow.
 - Storybook for the shared UI package.
 - Additional repository analytics and historical statistics.
 - Persisted user preferences such as theme and analytics settings.
