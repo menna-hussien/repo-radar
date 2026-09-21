@@ -15,6 +15,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { formatCount } from '../formatters';
 
 export interface SearchResultCardProps {
   id: number;
@@ -26,13 +27,6 @@ export interface SearchResultCardProps {
   openIssues: number | null;
   isTracked: boolean;
   onToggleTrack: (id: number) => void;
-}
-
-function formatCount(value: number | null): string {
-  if (value === null) {
-    return '—';
-  }
-  return new Intl.NumberFormat(undefined, { notation: 'compact' }).format(value);
 }
 
 function SearchResultCardComponent({

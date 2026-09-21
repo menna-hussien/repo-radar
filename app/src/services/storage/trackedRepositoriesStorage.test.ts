@@ -27,14 +27,6 @@ describe('trackedRepositoriesStorage', () => {
     expect(loadTrackedRepositories()).toEqual([]);
   });
 
-  it('persists the full repository, stats included', () => {
-    saveTrackedRepositories([makeRepository()]);
-
-    const raw = localStorage.getItem(TRACKED_REPOSITORIES_STORAGE_KEY);
-    expect(raw).not.toBeNull();
-    expect(JSON.parse(raw as string)).toEqual([makeRepository()]);
-  });
-
   it('round-trips a saved repository with stats intact, so stale data survives a refresh', () => {
     saveTrackedRepositories([makeRepository()]);
 

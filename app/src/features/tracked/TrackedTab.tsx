@@ -3,27 +3,20 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { EmptyState, RepositoryCard, SearchInput } from '@repo-radar/ui';
-import type { Repository } from '../../types';
-import type { StatsRequestState } from '../../store/repositories.types';
+import { useAppSelector } from '../../store/hooks';
+import { selectStatsStateByRepoId, selectTrackedRepositories } from '../../store/selectors';
 import { TRACKED_INITIAL_VISIBLE_COUNT, TRACKED_LOAD_MORE_STEP } from '../../constants';
 
 export interface TrackedTabProps {
-  trackedRepositories: Repository[];
-  statsStateByRepoId: Record<number, StatsRequestState>;
   onUntrack: (id: number) => void;
   onRefresh: (id: number) => void;
   onRefreshAll: () => void;
   onGoToSearch: () => void;
 }
 
-export function TrackedTab({
-  trackedRepositories,
-  statsStateByRepoId,
-  onUntrack,
-  onRefresh,
-  onRefreshAll,
-  onGoToSearch,
-}: TrackedTabProps) {
+export function TrackedTab({ onUntrack, onRefresh, onRefreshAll, onGoToSearch }: TrackedTabProps) {
+  const trackedRepositories = useAppSelector(selectTrackedRepositories);
+  const statsStateByRepoId = useAppSelector(selectStatsStateByRepoId);
   const [visibleCount, setVisibleCount] = useState(TRACKED_INITIAL_VISIBLE_COUNT);
   const [filterQuery, setFilterQuery] = useState('');
 

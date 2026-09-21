@@ -10,6 +10,7 @@ import {
   Box,
   CssBaseline,
   IconButton,
+  Stack,
   Tab,
   Tabs,
   ThemeProvider,
@@ -49,15 +50,7 @@ export function App() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('search');
-  const {
-    trackedRepositories,
-    statsStateByRepoId,
-    isTracked,
-    track,
-    untrack,
-    refreshOne,
-    refreshAll,
-  } = useTrackedRepositories();
+  const { isTracked, track, untrack, refreshOne, refreshAll } = useTrackedRepositories();
 
   const themeToggle = (
     <Tooltip title={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
@@ -111,16 +104,14 @@ export function App() {
               py: 1,
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 1.5,
-                flex: { sm: 1 },
-              }}
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              spacing={1.5}
+              sx={{ flex: { sm: 1 } }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+              <Stack direction="row" alignItems="center" spacing={1.5} sx={{ minWidth: 0 }}>
                 <RepoRadarLogo sx={{ fontSize: 36 }} />
                 <Typography
                   variant="h6"
@@ -129,9 +120,9 @@ export function App() {
                 >
                   Repo Radar
                 </Typography>
-              </Box>
+              </Stack>
               <Box sx={{ display: { xs: 'block', sm: 'none' } }}>{themeToggle}</Box>
-            </Box>
+            </Stack>
 
             {tabs}
 
@@ -149,8 +140,6 @@ export function App() {
         {activeTab === 'tracked' && (
           <TabPanel tab="tracked">
             <TrackedTab
-              trackedRepositories={trackedRepositories}
-              statsStateByRepoId={statsStateByRepoId}
               onUntrack={untrack}
               onRefresh={refreshOne}
               onRefreshAll={refreshAll}
@@ -160,7 +149,7 @@ export function App() {
         )}
         {activeTab === 'analytics' && (
           <TabPanel tab="analytics">
-            <AnalyticsTab trackedRepositories={trackedRepositories} />
+            <AnalyticsTab />
           </TabPanel>
         )}
       </Box>

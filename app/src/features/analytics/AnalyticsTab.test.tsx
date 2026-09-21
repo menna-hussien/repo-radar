@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { AnalyticsTab } from './AnalyticsTab';
+import { renderWithRepositories } from '../../test-utils/renderWithRepositories';
 import type { Repository } from '../../types';
 
 function makeRepository(overrides: Partial<Repository> = {}): Repository {
@@ -20,14 +21,14 @@ function makeRepository(overrides: Partial<Repository> = {}): Repository {
 
 describe('AnalyticsTab', () => {
   it('shows an empty state when nothing is tracked', () => {
-    render(<AnalyticsTab trackedRepositories={[]} />);
+    renderWithRepositories(<AnalyticsTab />);
 
     expect(screen.getByRole('heading', { name: 'No analytics yet' })).toBeInTheDocument();
     expect(screen.queryByText('Stars by Repository')).not.toBeInTheDocument();
   });
 
   it('shows the three chart cards when repositories are tracked', () => {
-    render(<AnalyticsTab trackedRepositories={[makeRepository()]} />);
+    renderWithRepositories(<AnalyticsTab />, { trackedRepositories: [makeRepository()] });
 
     expect(screen.getByText('Stars by Repository')).toBeInTheDocument();
     expect(screen.getByText('Open Issues by Repository')).toBeInTheDocument();

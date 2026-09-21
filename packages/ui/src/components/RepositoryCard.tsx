@@ -18,6 +18,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { formatCount, formatDate } from '../formatters';
 
 export interface RepositoryCardProps {
   id: number;
@@ -33,23 +34,6 @@ export interface RepositoryCardProps {
   error?: string | null;
   onRefresh: (id: number) => void;
   onUntrack: (id: number) => void;
-}
-
-function formatCount(value: number | null): string {
-  if (value === null) {
-    return '—';
-  }
-  return new Intl.NumberFormat(undefined, { notation: 'compact' }).format(value);
-}
-
-function formatDate(value: string | null): string {
-  if (!value) {
-    return '—';
-  }
-  return new Date(value).toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
 }
 
 function RepositoryCardComponent({

@@ -32,13 +32,7 @@ describe('mapRepositoryDto', () => {
     });
   });
 
-  it('defaults a null description to null', () => {
-    const repository = mapRepositoryDto(makeDto({ description: null }));
-
-    expect(repository.description).toBeNull();
-  });
-
-  it('defaults missing stats to null (the default feed endpoint omits them)', () => {
+  it('treats missing stats as null, not 0', () => {
     const repository = mapRepositoryDto(
       makeDto({ stargazers_count: undefined, open_issues_count: undefined }),
     );

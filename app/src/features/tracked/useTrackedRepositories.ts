@@ -79,11 +79,11 @@ export function useTrackedRepositories() {
     [dispatch],
   );
 
-  const refreshAll = useCallback(() => {
+  const refreshAll = () => {
     trackedRepositories.forEach((repository) => {
       void dispatch(fetchRepositoryStats({ repoId: repository.id }));
     });
-  }, [dispatch, trackedRepositories]);
+  };
 
   return {
     trackedRepositories,

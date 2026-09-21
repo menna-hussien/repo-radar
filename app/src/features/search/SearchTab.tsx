@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { Box, Container, Pagination, Stack, Typography } from '@mui/material';
 import { EmptyState, SearchIllustration, SearchInput } from '@repo-radar/ui';
 import type { Repository } from '../../types';
@@ -23,16 +24,21 @@ export function SearchTab({ isTracked, onTrack, onUntrack }: SearchTabProps) {
     onPageChange,
   } = useRepositorySearch();
 
-  const handleToggleTrack = (id: number) => {
-    if (isTracked(id)) {
-      onUntrack(id);
-      return;
-    }
-    const repository = repositories.find((candidate) => candidate.id === id);
-    if (repository) {
-      onTrack(repository);
-    }
-  };
+  // Stable between keystrokes, so the memoized result cards don't all re-render each
+  // time the search input changes.
+  const handleToggleTrack = useCallback(
+    (id: number) => {
+      if (isTracked(id)) {
+        onUntrack(id);
+        return;
+      }
+      const repository = repositories.find((candidate) => candidate.id === id);
+      if (repository) {
+        onTrack(repository);
+      }
+    },
+    [isTracked, onTrack, onUntrack, repositories],
+  );
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

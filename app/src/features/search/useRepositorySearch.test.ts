@@ -56,22 +56,6 @@ describe('useRepositorySearch', () => {
     expect(searchRepositoriesMock).toHaveBeenCalledWith('react', 1, expect.any(AbortSignal));
   });
 
-  it('resets to page 1 when the query changes', async () => {
-    searchRepositoriesMock.mockResolvedValue({ repositories: [], totalPages: 5 });
-    const { result } = renderHook(() => useRepositorySearch());
-
-    act(() => result.current.onQueryChange('react'));
-    await waitFor(() => expect(result.current.status).toBe('success'));
-
-    act(() => result.current.onPageChange(3));
-    await waitFor(() =>
-      expect(searchRepositoriesMock).toHaveBeenLastCalledWith('react', 3, expect.any(AbortSignal)),
-    );
-
-    act(() => result.current.onQueryChange('vue'));
-    await waitFor(() => expect(result.current.page).toBe(1));
-  });
-
   it('never requests the old page number for a new query', async () => {
     searchRepositoriesMock.mockResolvedValue({ repositories: [], totalPages: 5 });
     const { result } = renderHook(() => useRepositorySearch());
@@ -89,6 +73,7 @@ describe('useRepositorySearch', () => {
     );
 
     expect(searchRepositoriesMock).not.toHaveBeenCalledWith('vue', 3, expect.any(AbortSignal));
+    expect(result.current.page).toBe(1);
   });
 
   it('does not let a stale request overwrite a newer one', async () => {
